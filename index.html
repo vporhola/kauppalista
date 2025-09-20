@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Citymarket kauppalista</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+           border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #c41722 50%, #ad1015 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .add-item {
+            padding: 20px;
+            border-bottom: 3px solid #f47a20;
+        }
+
+        .add-item-form {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .add-item input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .add-item input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-item input[type="number"] {
+            width: 80px;
+            padding: 12px 8px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            transition: border-color 0.3s;
+            flex: none;
+        }
+
+        .add-item input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-item select {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .add-btn {
+            padding: 12px 20px;
+            background: #f47a20;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .add-btn:hover {
+            background: #5a67d8;
+        }
+
+        .quick-add {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-item {
+            padding: 6px 12px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .quick-item:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .section {
+            border-bottom: 1px solid #eee;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            font-weight: bold;
+            color: #f47a20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .section-header:hover {
+            background: #edf2f7;
+        }
+
+        .section-count {
+            background: #f47a20;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .items {
+            padding: 10px 20px 20px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.3s;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item.completed {
+            opacity: 0.6;
+        }
+
+        .item.completed .item-text {
+            text-decoration: line-through;
+            color: #a0aec0;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            margin-right: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .checkbox.checked {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        .checkbox.checked::after {
+            content: "✓";
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 16px;
+            color: #2d3748;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quantity {
+            background: #f47a20;
+            color: White;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 10px;
+        }
+
+        .quantity-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #cbd5e0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #4a5568;
+            transition: all 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background: #f7fafc;
+            border-color: #a0aec0;
+        }
+
+        .delete-btn {
+            color: #e53e3e;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.3s;
+            font-size: 18px;
+        }
+
+        .delete-btn:hover {
+            background: #fed7d7;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            text-align: center;
+            color: #4a5568;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: 1px solid #cbd5e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #f7fafc;
+        }
+
+        .action-btn.danger {
+            color: #e53e3e;
+            border-color: #feb2b2;
+        }
+
+        .action-btn.danger:hover {
+            background: #fed7d7;
+        }
+
+        .action-btn.primary {
+            color: #667eea;
+            border-color: #667eea;
+        }
+
+        .action-btn.primary:hover {
+            background: #edf2f7;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .route-info {
+            background: #f47a20;
+            border-left: 4px solid #ad1015;
+            padding: 15px 20px;
+            margin: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .route-info h3 {
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .route-info p {
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+           
+            body {
+                padding: 0;
+            }
+           
+            .action-buttons {
+                justify-content: center;
+            }
+           
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 Kauppalista</h1>
+            <p>K-Citymarket Oulu Kaakkuri</p>
+        </div>
+
+        <div class="route-info">
+            <h3>Kiertoreitti kaupassa</h3>
+            <p>Lista on järjestetty kaupan layoutin mukaan: Hedelmät & vihannekset → Liha & kala → Meijeri → Leipä → Juomat → Pakasteet. Seuraa järjestystä tehokkaaseen ostoreissuun!</p>
+        </div>
+
+        <div class="add-item">
+            <div class="add-item-form">
+                <input type="text" id="newItem" placeholder="Lisää uusi tuote..." maxlength="55">
+                <input type="number" id="quantityInput" placeholder="Kpl" min="1" max="99" value="1">
+                <select id="categorySelect">
+                    <option value="hedelmät">Hedelmät & vihannekset</option>
+                    <option value="leikkeleet">Leikkeleet</option>
+                <option value="liha">Liha & kala</option>
+                    <option value="meijeri">Meijeri</option>
+                    <option value="leipä">Leipä</option>
+                    <option value="juomat">Juomat</option>
+                    <option value="pakasteet">Pakasteet</option>
+                    <option value="muut">Muut</option>
+                </select>
+                <button class="add-btn" onclick="addItem()">Lisää</button>
+            </div>
+            <div class="quick-add" id="quickAdd"></div>
+        </div>
+
+        <input type="file" id="fileInput" class="file-input" accept=".json" onchange="handleFileUpload(event)">
+
+        <div id="shoppingList"></div>
+
+        <div class="stats" id="stats"></div>
+    </div>
+
+    <script>
+        // Oletustuotteet kategorioittain
+        const defaultItems = {
+            hedelmät: ['Kurkkua', 'Tomaattia', 'Paprikaa', 'Sipulit', 'Perunat', 'Salaatti'],
+            leipä: ['Ruisleipää', 'Sämpylöitä', 'Lempparirieskaa'],
+            leikkeleet:['Metvurstia', 'Ylikypsää saunapalvea', 'Kalkkunaleike'],
+          liha: ['Kanan filesuikale', 'Jauheliha', 'Kanan filee'],
+            meijeri: ['Maitoa', 'Viilis', 'Munia', 'Juustoa', 'Rahkat', 'Fit-tuotteet'],
+            juomat: ['Omenamehua', 'Appelsiinimehua', 'HartSport'],
+            pakasteet: ['Jäätelö', 'Pakastemarja', 'Kalavapikot'],
+            muut: ['Wc-paperi', 'Hammastahna', 'Shampoo', 'Pesuaine']
+        };
+
+        // Pika-lisäys ehdotukset
+        const quickAddSuggestions = ['Maitoa', 'Munia', 'Juustoa', 'Tonnikala', 'Omenamehua', 'Viilis', 'Fit-rahka', 'Rahkat'];
+
+        let shoppingList = {};
+       
+        // Lataa tallennettu lista tai alusta oletuksilla
+        function loadList() {
+            try {
+                const saved = localStorage.getItem('shoppingList');
+                if (saved) {
+                    shoppingList = JSON.parse(saved);
+                   
+                    // Korjaa vanhat tuotteet joista puuttuu quantity
+                    for (let category in shoppingList) {
+                        shoppingList[category].forEach(item => {
+                            if (typeof item.quantity === 'undefined' || isNaN(item.quantity)) {
+                                item.quantity = 1;
+                            }
+                            if (typeof item.id === 'undefined') {
+                                item.id = Date.now() + Math.random();
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.log('Tallennetun listan lataus epäonnistui');
+            }
+           
+            // Jos lista on tyhjä, alusta oletustuotteilla
+            if (Object.keys(shoppingList).length === 0) {
+                for (let category in defaultItems) {
+                    shoppingList[category] = defaultItems[category].map(item => ({
+                        text: item,
+                        quantity: 1,
+                        completed: false,
+                        id: Date.now() + Math.random()
+                    }));
+                }
+                saveList();
+            }
+        }
+
+        function saveList() {
+            try {
+                localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+            } catch (e) {
+                console.log('Listan tallennus epäonnistui');
+            }
+        }
+
+        function addItem() {
+            const input = document.getElementById('newItem');
+            const categorySelect = document.getElementById('categorySelect');
+            const quantityInput = document.getElementById('quantityInput');
+            const text = input.value.trim();
+            const quantity = parseInt(quantityInput.value) || 1;
+           
+            if (text) {
+                const category = categorySelect.value;
+                if (!shoppingList[category]) {
+                    shoppingList[category] = [];
+                }
+               
+                // Tarkista ettei tuote ole jo listassa
+                const existingItem = shoppingList[category].find(item =>
+                    item.text.toLowerCase() === text.toLowerCase()
+                );
+               
+                if (existingItem) {
+                    // Jos tuote on jo listassa, lisää määrää
+                    existingItem.quantity += quantity;
+                } else {
+                    // Lisää uusi tuote
+                    shoppingList[category].push({
+                        text: text,
+                        quantity: quantity,
+                        completed: false,
+                        id: Date.now() + Math.random()
+                    });
+                }
+               
+                input.value = '';
+                quantityInput.value = '1';
+                saveList();
+                renderList();
+            }
+        }
+
+        function addQuickItem(itemText) {
+            const category = 'muut'; // Oletuskategoria pika-lisäyksille
+            if (!shoppingList[category]) {
+                shoppingList[category] = [];
+            }
+           
+            // Etsi tuote kaikista kategorioista
+            let existingItem = null;
+            let existingCategory = null;
+           
+            for (let cat in shoppingList) {
+                const found = shoppingList[cat].find(item =>
+                    item.text.toLowerCase() === itemText.toLowerCase()
+                );
+                if (found) {
+                    existingItem = found;
+                    existingCategory = cat;
+                    break;
+                }
+            }
+           
+            if (existingItem) {
+                // Jos tuote on jo listassa, lisää määrää
+                existingItem.quantity += 1;
+            } else {
+                // Lisää uusi tuote
+                shoppingList[category].push({
+                    text: itemText,
+                    quantity: 1,
+                    completed: false,
+                    id: Date.now() + Math.random()
+                });
+            }
+           
+            saveList();
+            renderList();
+        }
+
+        function toggleItem(category, id) {
+            const item = shoppingList[category].find(item => item.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                saveList();
+                renderList();
+            }
+        }
+
+        function deleteItem(category, id) {
+            shoppingList[category] = shoppingList[category].filter(item => item.id !== id);
+            if (shoppingList[category].length === 0) {
+                delete shoppingList[category];
+            }
+            saveList();
+            renderList();
+        }
+
+        function changeQuantity(category, id, delta) {
+            const item = shoppingList[category].find(item => item.id === id);
+            if (item) {
+                // Varmista että quantity on numero
+                if (typeof item.quantity === 'undefined' || isNaN(item.quantity)) {
+                    item.quantity = 1;
+                }
+                item.quantity = Math.max(1, parseInt(item.quantity) + delta);
+                saveList();
+                renderList();
+            }
+        }
+
+        function resetCompleted() {
+            if (confirm('Poista kaikki valmiiksi merkityt tuotteet?')) {
+                for (let category in shoppingList) {
+                    shoppingList[category] = shoppingList[category].filter(item => !item.completed);
+                    if (shoppingList[category].length === 0) {
+                        delete shoppingList[category];
+                    }
+                }
+                saveList();
+                renderList();
+            }
+        }
+
+        function resetAll() {
+            if (confirm('Tyhjennä koko lista ja aloita alusta?')) {
+                shoppingList = {};
+                // Alusta perustuotteet uudelleen
+                for (let category in defaultItems) {
+                    shoppingList[category] = defaultItems[category].map(item => ({
+                        text: item,
+                        quantity: 1,
+                        completed: false,
+                        id: Date.now() + Math.random()
+                    }));
+                }
+                saveList();
+                renderList();
+            }
+        }
+
+        function clearCompleted() {
+            if (confirm('Poista valmiit tuotteet ja aloita uusi kauppareissu?')) {
+                for (let category in shoppingList) {
+                    shoppingList[category].forEach(item => {
+                        if (item.completed) {
+                            item.completed = false;
+                            item.quantity = 1;
+                        }
+                    });
+                }
+                saveList();
+                renderList();
+            }
+        }
+
+        function downloadList() {
+            const dataToSave = {
+                version: "1.0",
+                date: new Date().toISOString(),
+                shoppingList: shoppingList
+            };
+           
+            const dataStr = JSON.stringify(dataToSave, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+           
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `ostoslista-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        function uploadList() {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.click();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+           
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                   
+                    // Tarkista että tiedosto on oikeaa muotoa
+                    if (data.shoppingList) {
+                        if (confirm('Haluatko korvata nykyisen listan ladatulla listalla?')) {
+                            shoppingList = data.shoppingList;
+                           
+                            // Korjaa mahdolliset puuttuvat kentät
+                            for (let category in shoppingList) {
+                                shoppingList[category].forEach(item => {
+                                    if (typeof item.quantity === 'undefined' || isNaN(item.quantity)) {
+                                        item.quantity = 1;
+                                    }
+                                    if (typeof item.id === 'undefined') {
+                                        item.id = Date.now() + Math.random();
+                                    }
+                                    if (typeof item.completed === 'undefined') {
+                                        item.completed = false;
+                                    }
+                                });
+                            }
+                           
+                            saveList();
+                            renderList();
+                            alert('Lista ladattu onnistuneesti!');
+                        }
+                    } else {
+                        alert('Virheellinen tiedostomuoto. Valitse oikea ostoslistatiedosto.');
+                    }
+                } catch (error) {
+                    alert('Tiedoston lukeminen epäonnistui. Tarkista että kyseessä on oikea ostoslistatiedosto.');
+                }
+            };
+            reader.readAsText(file);
+           
+            // Tyhjennä input jotta sama tiedosto voidaan ladata uudelleen
+            event.target.value = '';
+        }
+
+        function exportAsText() {
+            const categoryOrder = ['hedelmät', 'leikkeleet', 'liha', 'meijeri', 'leipä', 'juomat', 'pakasteet', 'muut'];
+            const categoryNames = {
+                hedelmät: 'Hedelmät & vihannekset',
+                leikkeleet:'Leikkeleet',
+            liha: 'Liha & kala',
+                meijeri: 'Meijeri',
+                leipä: 'Leipä',
+                juomat: 'Juomat',
+                pakasteet: 'Pakasteet',
+                muut: 'Muut'
+            };
+           
+            let textContent = `OSTOSLISTA - ${new Date().toLocaleDateString('fi-FI')}\n`;
+            textContent += '='.repeat(40) + '\n\n';
+           
+            categoryOrder.forEach(category => {
+                if (shoppingList[category] && shoppingList[category].length > 0) {
+                    textContent += `${categoryNames[category].toUpperCase()}\n`;
+                    textContent += '-'.repeat(categoryNames[category].length) + '\n';
+                   
+                    shoppingList[category].forEach(item => {
+                        const status = item.completed ? '✓' : '☐';
+                        const quantity = item.quantity > 1 ? ` x${item.quantity}` : '';
+                        textContent += `${status} ${item.text}${quantity}\n`;
+                    });
+                    textContent += '\n';
+                }
+            });
+           
+            const blob = new Blob([textContent], {type: 'text/plain;charset=utf-8'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `ostoslista-${new Date().toISOString().split('T')[0]}.txt`;
+            link.click();
+        }
+
+        function renderList() {
+            const container = document.getElementById('shoppingList');
+            const categoryOrder = ['hedelmät', 'leikkeleet', 'liha', 'meijeri', 'leipä', 'juomat', 'pakasteet', 'muut'];
+           
+            let html = '';
+            let totalItems = 0;
+            let completedItems = 0;
+
+            categoryOrder.forEach(category => {
+                if (shoppingList[category] && shoppingList[category].length > 0) {
+                    const items = shoppingList[category];
+                    const categoryCompleted = items.filter(item => item.completed).length;
+                    totalItems += items.length;
+                    completedItems += categoryCompleted;
+
+                    const categoryNames = {
+                        hedelmät: '🥕 Hedelmät & vihannekset',
+                        leikkeleet: ' Leikkeleet',
+                  liha: '🥩 Liha & kala',  
+                        meijeri: '🥛 Meijeri',
+                        leipä: '🍞 Leipä',
+                        juomat: '🥤 Juomat',
+                        pakasteet: '❄️ Pakasteet',
+                        muut: '🛍️ Muut'
+                    };
+
+                    html += `
+                        <div class="section">
+                            <div class="section-header">
+                                <span>${categoryNames[category]}</span>
+                                <span class="section-count">${categoryCompleted}/${items.length}</span>
+                            </div>
+                            <div class="items">
+                    `;
+
+                    items.forEach(item => {
+                        // Varmista että quantity on numero
+                        const quantity = typeof item.quantity === 'undefined' || isNaN(item.quantity) ? 1 : parseInt(item.quantity);
+                       
+                        html += `
+                            <div class="item ${item.completed ? 'completed' : ''}">
+                                <div class="checkbox ${item.completed ? 'checked' : ''}"
+                                     onclick="toggleItem('${category}', ${item.id})"></div>
+                                <div class="item-text">
+                                    <span>${item.text}</span>
+                                    <div style="display: flex; align-items: center;">
+                                        <span class="quantity">${quantity} kpl</span>
+                                        <div class="quantity-controls">
+                                            <div class="quantity-btn" onclick="changeQuantity('${category}', ${item.id}, -1)">-</div>
+                                            <div class="quantity-btn" onclick="changeQuantity('${category}', ${item.id}, 1)">+</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="delete-btn" onclick="deleteItem('${category}', ${item.id})">×</div>
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+
+            // Päivitä tilastot
+            const stats = document.getElementById('stats');
+            const percentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+            stats.innerHTML = `
+                <div>Edistyminen: ${completedItems}/${totalItems} tuotetta (${percentage}%)
+                ${completedItems === totalItems && totalItems > 0 ? '🎉' : ''}</div>
+                <div class="action-buttons">
+                    <button class="action-btn primary" onclick="downloadList()">💾 Tallenna lista</button>
+                    <button class="action-btn primary" onclick="uploadList()">📂 Lataa lista</button>
+                    <button class="action-btn primary" onclick="exportAsText()">📄 Vie tekstinä</button>
+                    <button class="action-btn" onclick="clearCompleted()">🔄 Uusi reissu</button>
+                    <button class="action-btn danger" onclick="resetCompleted()">🗑️ Poista valmiit</button>
+                    <button class="action-btn danger" onclick="resetAll()">⚠️ Tyhjennä lista</button>
+                </div>
+            `;
+
+            // Päivitä pika-lisäys
+            renderQuickAdd();
+        }
+
+        function renderQuickAdd() {
+            const container = document.getElementById('quickAdd');
+            const existingItems = Object.values(shoppingList).flat().map(item => item.text.toLowerCase());
+           
+            const availableItems = quickAddSuggestions.filter(item =>
+                !existingItems.includes(item.toLowerCase())
+            );
+
+            container.innerHTML = availableItems.map(item =>
+                `<div class="quick-item" onclick="addQuickItem('${item}')">${item}</div>`
+            ).join('');
+        }
+
+        // Kuuntelijat
+        document.getElementById('newItem').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addItem();
+            }
+        });
+
+        // Alustus
+        loadList();
+        renderList();
+    </script>
+</body>
+</html>
